@@ -1,0 +1,58 @@
+# active-print.py.
+# Copyright (C) 2018 Leander Jedamus
+# This file is distributed under the same license as the active-print.py package.
+# ljedamus@testmail.com, 2018.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: active-print.py 1.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2018-05-05 08:59+0200\n"
+"PO-Revision-Date: 2018-05-05 08:59+0200\n"
+"Last-Translator: Automatically generated\n"
+"Language-Team: none\n"
+"Language: en\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+#: active-print.py:52 active-print.py:92
+msgid "Active-Print"
+msgstr "Active-Print"
+
+#: active-print.py:53
+msgid "Can't initialize pynotify"
+msgstr "Can't initialize pynotify"
+
+#: active-print.py:77
+msgid "new_path = {new_path:s}"
+msgstr "new_path = {new_path:s}"
+
+#: active-print.py:78
+msgid "suffix_regex = {suffix_regex:s}"
+msgstr "suffix_regex = {suffix_regex:s}"
+
+#: active-print.py:79
+msgid "suffix = {suffix:s}"
+msgstr "suffix = {suffix:s}"
+
+#: active-print.py:84
+msgid "filename = {filename:s}"
+msgstr "filename = {filename:s}"
+
+#: active-print.py:85
+msgid "filename_without_suffix = {filename_without_suffix:s}"
+msgstr "filename_without_suffix = {filename_without_suffix:s}"
+
+#: active-print.py:91
+msgid "Printed {filename:s} on {printer:s}"
+msgstr "Printed {filename:s} on {printer:s}"
+
+#: active-print.py:96
+msgid "Failed to send notification"
+msgstr "Failed to send notification"
+
+#: active-print.py:99
+msgid "Can't print file {filename:s}"
+msgstr "Can't print file {filename:s}"
