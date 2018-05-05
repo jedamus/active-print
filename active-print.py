@@ -2,7 +2,7 @@
 # coding=utf8
 
 # erzeugt Donnerstag, 08. Juni 2017 19:05 (C) 2017 von Leander Jedamus
-# modifiziert Samstag, 05. Mai 2018 08:59 von Leander Jedamus
+# modifiziert Samstag, 05. Mai 2018 15:58 von Leander Jedamus
 # modifiziert Donnerstag, 22. Juni 2017 17:20 von Leander Jedamus
 # modifiziert Freitag, 16. Juni 2017 01:57 von Leander Jedamus
 # modifiziert Montag, 12. Juni 2017 18:47 von Leander Jedamus
@@ -21,11 +21,12 @@ import logging
 home = os.environ["HOME"]
 printer = "laserjet"
 path_to_watch = os.path.join(home,"print")
-log_path_and_filename = os.path.join("/tmp","active-print.log")
+#path_to_watch = os.path.join(home,"print",printer)
+log_path_and_filename = os.path.join("/tmp","active-print-laserjet.log")
 
 dict_suffix_and_path = {
   "pdf":       "",
-  "ps":       "",
+  "ps":        "",
 };
 
 file_handler = logging.FileHandler(log_path_and_filename)
@@ -37,7 +38,7 @@ stdout_handler.setFormatter(formatter)
 log = logging.getLogger()
 log.addHandler(file_handler)
 log.addHandler(stdout_handler)
-log.setLevel(logging.INFO)
+log.setLevel(logging.DEBUG)
 
 scriptpath = os.path.abspath(os.path.dirname(sys.argv[0]))
 try:
@@ -86,8 +87,17 @@ class EventHandler(pyinotify.ProcessEvent):
 
           try:
             #os.rename(pathname, os.path.join(new_path,new_filename))
+            if suffix == "ps":
+              log.debug(_("suffix ist ps"))
+              new_pathname = "/tmp/{filename:s}".format(filename=filename_without_suffix + ".pdf")
+              log.debug(_("new_pathname = {new_pathname:s}").format(new_pathname=new_pathname))
+              log.debug(_("pathname = {pathname:s}").format(pathname=pathname))
+              os.system("ps2pdf -sPAPERSIZE=a4 {pathname:s} {new_pathname:s}".format(pathname=pathname,new_pathname=new_pathname))
+              #os.remove(pathname)
+              pathname = new_pathname
+              
             os.system("lpr -P{printer:s} {pathname:s}".format(printer=printer,pathname=pathname))
-            os.remove(pathname)
+            #os.remove(pathname)
             message = _("Printed {filename:s} on {printer:s}").format(filename=filename,printer=printer)
             n = pynotify.Notification(_("Active-Print"), message)
             log.info(message)
