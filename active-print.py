@@ -2,6 +2,7 @@
 # coding=utf8
 
 # erzeugt Donnerstag, 08. Juni 2017 19:05 (C) 2017 von Leander Jedamus
+# modifiziert Samstag, 05. Mai 2018 08:59 von Leander Jedamus
 # modifiziert Donnerstag, 22. Juni 2017 17:20 von Leander Jedamus
 # modifiziert Freitag, 16. Juni 2017 01:57 von Leander Jedamus
 # modifiziert Montag, 12. Juni 2017 18:47 von Leander Jedamus
@@ -18,21 +19,13 @@ import gettext
 import logging
 
 home = os.environ["HOME"]
-path_to_watch = os.path.join(home,"Downloads")
-log_path_and_filename = os.path.join("/tmp","download-sortierer.log")
+printer = "laserjet"
+path_to_watch = os.path.join(home,"print")
+log_path_and_filename = os.path.join("/tmp","active-print.log")
 
 dict_suffix_and_path = {
-  "dmg":       os.path.join("MacOS","dmg"),
-  "pkg":       os.path.join("MacOS","dmg"),
-  "iso":       "iso",
-  "zip":       "zip",
-  "deb":       "deb",
-  "pdf":       os.path.join(home,"Documents","pdf","download PDFs"),
-  "tgz":       "tgz",
-  "tar.gz":    "tgz",
-  "tar.xz":    "tgz",
-  "tar.bzip2": "tgz",
-  "a.b.c.d":   "abcd",
+  "pdf":       "",
+  "ps":       "",
 };
 
 file_handler = logging.FileHandler(log_path_and_filename)
@@ -48,7 +41,7 @@ log.setLevel(logging.INFO)
 
 scriptpath = os.path.abspath(os.path.dirname(sys.argv[0]))
 try:
-  trans = gettext.translation("download-sortierer.py",os.path.join(scriptpath, \
+  trans = gettext.translation("active-print.py",os.path.join(scriptpath, \
                                                        "translate"))
   trans.install(unicode=True)
 except IOError:
@@ -56,7 +49,7 @@ except IOError:
   def _(s):
     return s
 
-if not pynotify.init(_("Download-Sorter")):
+if not pynotify.init(_("Active-Print")):
   log.critical(_("Can't initialize pynotify"))
   sys.exit(1);
 
@@ -64,9 +57,7 @@ dict_compiled_regex_and_path = {}
 for key in dict_suffix_and_path:
   suffix = re.sub("[.]","[.]","." + key)
   path = dict_suffix_and_path[key]
-  log.debug(_("path = {path:s}").format(path=path))
-  if path[0] != "/":
-    path = os.path.join(path_to_watch,path)
+  path = os.path.join(path_to_watch,path)
   regex = os.path.join(path_to_watch,".*" + suffix);
   compiled_key = re.compile(regex, re.UNICODE)
   dict_compiled_regex_and_path.update({ compiled_key: [key, suffix, path] })
@@ -86,12 +77,6 @@ class EventHandler(pyinotify.ProcessEvent):
           log.debug(_("new_path = {new_path:s}").format(new_path=new_path))
           log.debug(_("suffix_regex = {suffix_regex:s}").format(suffix_regex=suffix_regex))
           log.debug(_("suffix = {suffix:s}").format(suffix=suffix))
-          if not os.access(new_path, os.F_OK | os.X_OK):
-            try:
-              os.makedirs(new_path)
-            except OSError:
-              log.error(_("Can't create dirs {dirs:s}").format(dirs=new_path))
-              break
           filename = re.sub(os.path.join(".*","(.*") + suffix_regex + ")",
             "\g<1>",pathname)
           filename_without_suffix = re.sub("(.*)" + suffix_regex,"\g<1>",
@@ -99,24 +84,19 @@ class EventHandler(pyinotify.ProcessEvent):
           log.debug(_("filename = {filename:s}").format(filename=filename))
           log.debug(_("filename_without_suffix = {filename_without_suffix:s}").format(filename_without_suffix=filename_without_suffix))
 
-          new_filename = os.path.join(new_path,filename)
-          if os.access(new_filename, os.F_OK):
-            for i in range(2,99):
-              new_filename = filename_without_suffix + "({i:02d})".format(i=i) \
-                + "." + suffix;
-              if not os.access(os.path.join(new_path,new_filename), os.F_OK):
-                break;
           try:
-            os.rename(pathname, os.path.join(new_path,new_filename))
-            message = _("Moved {filename:s} from {frompath:s} to {topath:s} as {newfile:s}").format(filename=filename, frompath=path_to_watch, topath=new_path, newfile=new_filename)
-            n = pynotify.Notification(_("Download-Sorter"), message)
+            #os.rename(pathname, os.path.join(new_path,new_filename))
+            os.system("lpr -P{printer:s} {pathname:s}".format(printer=printer,pathname=pathname))
+            os.remove(pathname)
+            message = _("Printed {filename:s} on {printer:s}").format(filename=filename,printer=printer)
+            n = pynotify.Notification(_("Active-Print"), message)
             log.info(message)
 
             if not n.show():
               log.error(_("Failed to send notification"))
             break;
           except OSError:
-            log.error(_("Can't move file {filename:s} from {frompath:s} to {topath:s} as {newfile:s}").format(filename=filename, frompath=path_to_watch, topath=new_path, newfile=new_filename))
+            log.error(_("Can't print file {filename:s}").format(filename=filename))
 
 handler = EventHandler()
 notifier = pyinotify.Notifier(wm, handler)
