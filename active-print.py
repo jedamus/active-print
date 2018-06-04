@@ -2,6 +2,7 @@
 # coding=utf8
 
 # erzeugt Donnerstag, 08. Juni 2017 19:05 (C) 2017 von Leander Jedamus
+# modifiziert Montag, 04. Juni 2018 22:26 von Leander Jedamus
 # modifiziert Samstag, 05. Mai 2018 16:17 von Leander Jedamus
 # modifiziert Donnerstag, 22. Juni 2017 17:20 von Leander Jedamus
 # modifiziert Freitag, 16. Juni 2017 01:57 von Leander Jedamus
@@ -21,8 +22,9 @@ import logging
 printer = "laserjet"
 
 home = os.environ["HOME"]
+user = os.environ["USER"]
 path_to_watch = os.path.join(home,"print",printer)
-log_path_and_filename = os.path.join("/tmp","active-print-" + printer + ".log")
+log_path_and_filename = os.path.join("/tmp",user + "-active-print-" + printer + ".log")
 
 dict_suffix_and_path = {
   "pdf":       "",
