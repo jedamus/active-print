@@ -2,7 +2,7 @@
 # coding=utf8
 
 # erzeugt Donnerstag, 08. Juni 2017 19:05 (C) 2017 von Leander Jedamus
-# modifiziert Montag, 04. Juni 2018 22:26 von Leander Jedamus
+# modifiziert Montag, 04. Juni 2018 23:53 von Leander Jedamus
 # modifiziert Samstag, 05. Mai 2018 16:17 von Leander Jedamus
 # modifiziert Donnerstag, 22. Juni 2017 17:20 von Leander Jedamus
 # modifiziert Freitag, 16. Juni 2017 01:57 von Leander Jedamus
@@ -18,8 +18,11 @@ import pynotify
 import re
 import gettext
 import logging
+from argparse import ArgumentParser
 
-printer = "laserjet"
+parser = ArgumentParser()
+parser.add_argument("-P", "--printer", dest="printer", default="laserjet")
+printer = parser.parse_args().printer
 
 home = os.environ["HOME"]
 user = os.environ["USER"]
