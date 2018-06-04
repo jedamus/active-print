@@ -2,7 +2,7 @@
 Name=Download-Sortierer
 GenericName=Download-Sortierer
 Comment=Download-Sortierer
-Exec=/home/leander/bin/active-print.py
+Exec=/home/leander/bin/active-print.py -P laserjet
 Terminal=false
 Type=Application
 Icon=dropbox
