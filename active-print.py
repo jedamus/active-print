@@ -2,6 +2,7 @@
 # coding=utf8
 
 # erzeugt Donnerstag, 08. Juni 2017 19:05 (C) 2017 von Leander Jedamus
+# modifiziert Dienstag, 05. Juni 2018 01:58 von Leander Jedamus
 # modifiziert Montag, 04. Juni 2018 23:53 von Leander Jedamus
 # modifiziert Samstag, 05. Mai 2018 16:17 von Leander Jedamus
 # modifiziert Donnerstag, 22. Juni 2017 17:20 von Leander Jedamus
@@ -20,14 +21,9 @@ import gettext
 import logging
 from argparse import ArgumentParser
 
-parser = ArgumentParser()
-parser.add_argument("-P", "--printer", dest="printer", default="laserjet")
-printer = parser.parse_args().printer
-
 home = os.environ["HOME"]
 user = os.environ["USER"]
-path_to_watch = os.path.join(home,"print",printer)
-log_path_and_filename = os.path.join("/tmp",user + "-active-print-" + printer + ".log")
+log_path_and_filename = os.path.join("/tmp",user + "-active-print.log")
 
 dict_suffix_and_path = {
   "pdf":       "",
@@ -54,6 +50,11 @@ except IOError:
   log.error("Fehler in gettext")
   def _(s):
     return s
+
+parser = ArgumentParser(description = _("Copy a PS- or PDF-file in a special directory and the file gets printed."))
+parser.add_argument("-P", "--printer", dest="printer", default="laserjet", help = _("select printer"))
+printer = parser.parse_args().printer
+path_to_watch = os.path.join(home,"print",printer)
 
 if not pynotify.init(_("Active-Print")):
   log.critical(_("Can't initialize pynotify"))

@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: active-print.py 1.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2018-05-05 08:59+0200\n"
+"POT-Creation-Date: 2018-06-05 01:58+0200\n"
 "PO-Revision-Date: 2018-05-05 08:59+0200\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: none\n"
@@ -17,42 +17,66 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
-#: active-print.py:52 active-print.py:92
+#: active-print.py:54
+msgid ""
+"Copy a PS- or PDF-file in a special directory and the file gets printed."
+msgstr ""
+"Copy a PS- or PDF-file in a special directory and the file gets printed."
+
+#: active-print.py:55
+msgid "select printer"
+msgstr "select printer"
+
+#: active-print.py:59 active-print.py:108
 msgid "Active-Print"
 msgstr "Active-Print"
 
-#: active-print.py:53
+#: active-print.py:60
 msgid "Can't initialize pynotify"
 msgstr "Can't initialize pynotify"
 
-#: active-print.py:77
+#: active-print.py:84
 msgid "new_path = {new_path:s}"
 msgstr "new_path = {new_path:s}"
 
-#: active-print.py:78
+#: active-print.py:85
 msgid "suffix_regex = {suffix_regex:s}"
 msgstr "suffix_regex = {suffix_regex:s}"
 
-#: active-print.py:79
+#: active-print.py:86
 msgid "suffix = {suffix:s}"
 msgstr "suffix = {suffix:s}"
 
-#: active-print.py:84
+#: active-print.py:91
 msgid "filename = {filename:s}"
 msgstr "filename = {filename:s}"
 
-#: active-print.py:85
+#: active-print.py:92
 msgid "filename_without_suffix = {filename_without_suffix:s}"
 msgstr "filename_without_suffix = {filename_without_suffix:s}"
 
-#: active-print.py:91
+#: active-print.py:97
+msgid "suffix ist ps"
+msgstr "suffix ist ps"
+
+#: active-print.py:99
+#, fuzzy
+msgid "new_pathname = {new_pathname:s}"
+msgstr "new_path = {new_path:s}"
+
+#: active-print.py:100
+#, fuzzy
+msgid "pathname = {pathname:s}"
+msgstr "filename = {filename:s}"
+
+#: active-print.py:107
 msgid "Printed {filename:s} on {printer:s}"
 msgstr "Printed {filename:s} on {printer:s}"
 
-#: active-print.py:96
+#: active-print.py:112
 msgid "Failed to send notification"
 msgstr "Failed to send notification"
 
-#: active-print.py:99
+#: active-print.py:115
 msgid "Can't print file {filename:s}"
 msgstr "Can't print file {filename:s}"
