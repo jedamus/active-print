@@ -2,6 +2,7 @@
 # coding=utf8
 
 # erzeugt Donnerstag, 08. Juni 2017 19:05 (C) 2017 von Leander Jedamus
+# modifiziert Sonntag, 15. Juli 2018 16:58 von Leander Jedamus
 # modifiziert Dienstag, 05. Juni 2018 01:58 von Leander Jedamus
 # modifiziert Montag, 04. Juni 2018 23:53 von Leander Jedamus
 # modifiziert Samstag, 05. Mai 2018 16:17 von Leander Jedamus
@@ -14,12 +15,47 @@
 
 import os
 import sys
-import pyinotify
-import pynotify
 import re
 import gettext
 import logging
 from argparse import ArgumentParser
+import pynotify
+import pyinotify
+
+def can_continue(filename):
+
+  def write_pid(filename,pid):
+    filedesc = open(filename,"w")
+    filedesc.write("{pid:d}".format(pid=pid))
+    filedesc.close()
+
+  pid = os.getpid()
+  #print("{pid:d}".format(pid=pid))
+  #print("{filename:s}".format(filename=filename))
+  if os.access(filename, os.F_OK):
+    #print("file existiert.")
+    filedesc = open(filename,"r")
+    # print(filedesc.readline())
+    pidstr = filedesc.readline()
+    pid = int(pidstr)
+    #print("{pid:d}".format(pid=pid))
+    filedesc.close()
+    befehl = "ps -q " + pidstr + " -o comm= > /dev/null"
+    #print(befehl)
+    ret = os.system(befehl)
+    #print("{ret:d}".format(ret=ret))
+    if (ret == 0):
+      #print("Prozess mit der Nr. {pid:d} läuft noch.".format(pid=pid))
+      return False
+    else:
+      #print("Prozess mit der Nr. {pid:d} läuft nicht mehr.".format(pid=pid))
+      pid = os.getpid()
+      write_pid(filename,pid)
+      return True
+  else:
+    #print("file existiert nicht.")
+    write_pid(filename,pid)
+    return True
 
 home = os.environ["HOME"]
 user = os.environ["USER"]
@@ -56,69 +92,73 @@ parser.add_argument("-P", "--printer", dest="printer", default="laserjet", help 
 printer = parser.parse_args().printer
 path_to_watch = os.path.join(home,"print",printer)
 
-if not pynotify.init(_("Active-Print")):
-  log.critical(_("Can't initialize pynotify"))
-  sys.exit(1);
+if can_continue(os.path.join("/tmp",user + "-active-print-" + printer + ".pid")):
+  if not pynotify.init(_("Active-Print")):
+    log.critical(_("Can't initialize pynotify"))
+    sys.exit(1);
 
-dict_compiled_regex_and_path = {}
-for key in dict_suffix_and_path:
-  suffix = re.sub("[.]","[.]","." + key)
-  path = dict_suffix_and_path[key]
-  path = os.path.join(path_to_watch,path)
-  regex = os.path.join(path_to_watch,".*" + suffix);
-  compiled_key = re.compile(regex, re.UNICODE)
-  dict_compiled_regex_and_path.update({ compiled_key: [key, suffix, path] })
+  dict_compiled_regex_and_path = {}
+  for key in dict_suffix_and_path:
+    suffix = re.sub("[.]","[.]","." + key)
+    path = dict_suffix_and_path[key]
+    path = os.path.join(path_to_watch,path)
+    regex = os.path.join(path_to_watch,".*" + suffix);
+    compiled_key = re.compile(regex, re.UNICODE)
+    dict_compiled_regex_and_path.update({ compiled_key: [key, suffix, path] })
 
-wm = pyinotify.WatchManager();  # Watch Manager
-mask = pyinotify.IN_CLOSE_WRITE # watched events
+  wm = pyinotify.WatchManager();  # Watch Manager
+  mask = pyinotify.IN_CLOSE_WRITE # watched events
 
-class EventHandler(pyinotify.ProcessEvent):
-    def process_IN_CLOSE_WRITE(self, event):
-      pathname = event.pathname
-      for key in dict_compiled_regex_and_path:
-        if key.match(pathname):
-          new_path = dict_compiled_regex_and_path[key][2]
-          suffix_regex = dict_compiled_regex_and_path[key][1]
-          suffix = dict_compiled_regex_and_path[key][0]
+  class EventHandler(pyinotify.ProcessEvent):
+      def process_IN_CLOSE_WRITE(self, event):
+        pathname = event.pathname
+        for key in dict_compiled_regex_and_path:
+          if key.match(pathname):
+            new_path = dict_compiled_regex_and_path[key][2]
+            suffix_regex = dict_compiled_regex_and_path[key][1]
+            suffix = dict_compiled_regex_and_path[key][0]
 
-          log.debug(_("new_path = {new_path:s}").format(new_path=new_path))
-          log.debug(_("suffix_regex = {suffix_regex:s}").format(suffix_regex=suffix_regex))
-          log.debug(_("suffix = {suffix:s}").format(suffix=suffix))
-          filename = re.sub(os.path.join(".*","(.*") + suffix_regex + ")",
-            "\g<1>",pathname)
-          filename_without_suffix = re.sub("(.*)" + suffix_regex,"\g<1>",
-                                           filename)
-          log.debug(_("filename = {filename:s}").format(filename=filename))
-          log.debug(_("filename_without_suffix = {filename_without_suffix:s}").format(filename_without_suffix=filename_without_suffix))
+            log.debug(_("new_path = {new_path:s}").format(new_path=new_path))
+            log.debug(_("suffix_regex = {suffix_regex:s}").format(suffix_regex=suffix_regex))
+            log.debug(_("suffix = {suffix:s}").format(suffix=suffix))
+            filename = re.sub(os.path.join(".*","(.*") + suffix_regex + ")",
+              "\g<1>",pathname)
+            filename_without_suffix = re.sub("(.*)" + suffix_regex,"\g<1>",
+                                             filename)
+            log.debug(_("filename = {filename:s}").format(filename=filename))
+            log.debug(_("filename_without_suffix = {filename_without_suffix:s}").format(filename_without_suffix=filename_without_suffix))
 
-          try:
-            #os.rename(pathname, os.path.join(new_path,new_filename))
-            if suffix == "ps":
-              log.debug(_("suffix ist ps"))
-              new_pathname = "/tmp/{filename:s}".format(filename=filename_without_suffix + ".pdf")
-              log.debug(_("new_pathname = {new_pathname:s}").format(new_pathname=new_pathname))
-              log.debug(_("pathname = {pathname:s}").format(pathname=pathname))
-              os.system("ps2pdf -sPAPERSIZE=a4 {pathname:s} {new_pathname:s}".format(pathname=pathname,new_pathname=new_pathname))
+            try:
+              #os.rename(pathname, os.path.join(new_path,new_filename))
+              if suffix == "ps":
+                log.debug(_("suffix ist ps"))
+                new_pathname = "/tmp/{filename:s}".format(filename=filename_without_suffix + ".pdf")
+                log.debug(_("new_pathname = {new_pathname:s}").format(new_pathname=new_pathname))
+                log.debug(_("pathname = {pathname:s}").format(pathname=pathname))
+                os.system("ps2pdf -sPAPERSIZE=a4 {pathname:s} {new_pathname:s}".format(pathname=pathname,new_pathname=new_pathname))
+                os.remove(pathname)
+                pathname = new_pathname
+                
+              os.system("lpr -P{printer:s} {pathname:s}".format(printer=printer,pathname=pathname))
               os.remove(pathname)
-              pathname = new_pathname
-              
-            os.system("lpr -P{printer:s} {pathname:s}".format(printer=printer,pathname=pathname))
-            os.remove(pathname)
-            message = _("Printed {filename:s} on {printer:s}").format(filename=filename,printer=printer)
-            n = pynotify.Notification(_("Active-Print"), message)
-            log.info(message)
+              message = _("Printed {filename:s} on {printer:s}").format(filename=filename,printer=printer)
+              n = pynotify.Notification(_("Active-Print"), message)
+              log.info(message)
 
-            if not n.show():
-              log.error(_("Failed to send notification"))
-            break;
-          except OSError:
-            log.error(_("Can't print file {filename:s}").format(filename=filename))
+              if not n.show():
+                log.error(_("Failed to send notification"))
+              break;
+            except OSError:
+              log.error(_("Can't print file {filename:s}").format(filename=filename))
 
-handler = EventHandler()
-notifier = pyinotify.Notifier(wm, handler)
-wdd = wm.add_watch(path_to_watch, mask, rec=False)
+  handler = EventHandler()
+  notifier = pyinotify.Notifier(wm, handler)
+  wdd = wm.add_watch(path_to_watch, mask, rec=False)
 
-notifier.loop()
+  notifier.loop()
+else:
+  pass
+  print("läuft schon.")
 
 # vim:ai sw=2 sts=4 expandtab
 
