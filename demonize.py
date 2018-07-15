@@ -2,12 +2,17 @@
 # coding=utf-8
 
 # erzeugt Sonntag, 15. Juli 2018 15:25 (C) 2018 von Leander Jedamus
-# modifiziert Sonntag, 15. Juli 2018 16:40 von Leander Jedamus
+# modifiziert Sonntag, 15. Juli 2018 17:50 von Leander Jedamus
 
 from __future__ import print_function
 import os
 
 user = os.environ["USER"]
+hat_display = "DISPLAY" in os.environ
+if hat_display:
+  print("DISPLAY")
+else:
+  print("kein DISPLAY")
 filename = os.path.join("/tmp",user + "-demonize.pid")
 pid = os.getpid()
 
@@ -17,6 +22,7 @@ def write_pid(filename,pid):
   filedesc.close()
 
 print("{pid:d}".format(pid=pid))
+#print("{display:s}".format(display=display))
 print("{filename:s}".format(filename=filename))
 if os.access(filename, os.F_OK):
   print("file existiert.")

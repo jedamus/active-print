@@ -2,7 +2,7 @@
 # coding=utf8
 
 # erzeugt Donnerstag, 08. Juni 2017 19:05 (C) 2017 von Leander Jedamus
-# modifiziert Sonntag, 15. Juli 2018 16:58 von Leander Jedamus
+# modifiziert Sonntag, 15. Juli 2018 17:57 von Leander Jedamus
 # modifiziert Dienstag, 05. Juni 2018 01:58 von Leander Jedamus
 # modifiziert Montag, 04. Juni 2018 23:53 von Leander Jedamus
 # modifiziert Samstag, 05. Mai 2018 16:17 von Leander Jedamus
@@ -59,6 +59,8 @@ def can_continue(filename):
 
 home = os.environ["HOME"]
 user = os.environ["USER"]
+hat_display = "DISPLAY" in os.environ
+
 log_path_and_filename = os.path.join("/tmp",user + "-active-print.log")
 
 dict_suffix_and_path = {
@@ -93,9 +95,10 @@ printer = parser.parse_args().printer
 path_to_watch = os.path.join(home,"print",printer)
 
 if can_continue(os.path.join("/tmp",user + "-active-print-" + printer + ".pid")):
-  if not pynotify.init(_("Active-Print")):
-    log.critical(_("Can't initialize pynotify"))
-    sys.exit(1);
+  if hat_display:
+    if not pynotify.init(_("Active-Print")):
+      log.critical(_("Can't initialize pynotify"))
+      sys.exit(1);
 
   dict_compiled_regex_and_path = {}
   for key in dict_suffix_and_path:
@@ -142,12 +145,12 @@ if can_continue(os.path.join("/tmp",user + "-active-print-" + printer + ".pid"))
               os.system("lpr -P{printer:s} {pathname:s}".format(printer=printer,pathname=pathname))
               os.remove(pathname)
               message = _("Printed {filename:s} on {printer:s}").format(filename=filename,printer=printer)
-              n = pynotify.Notification(_("Active-Print"), message)
               log.info(message)
-
-              if not n.show():
-                log.error(_("Failed to send notification"))
-              break;
+              if hat_display:
+                n = pynotify.Notification(_("Active-Print"), message)
+                if not n.show():
+                  log.error(_("Failed to send notification"))
+                break;
             except OSError:
               log.error(_("Can't print file {filename:s}").format(filename=filename))
 
@@ -158,7 +161,7 @@ if can_continue(os.path.join("/tmp",user + "-active-print-" + printer + ".pid"))
   notifier.loop()
 else:
   pass
-  print("läuft schon.")
+  #print("läuft schon.")
 
 # vim:ai sw=2 sts=4 expandtab
 
