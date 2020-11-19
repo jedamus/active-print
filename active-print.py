@@ -2,6 +2,7 @@
 # coding=utf8
 
 # erzeugt Donnerstag, 08. Juni 2017 19:05 (C) 2017 von Leander Jedamus
+# modifiziert Donnerstag, 19. November 2020 09:12 von Leander Jedamus
 # modifiziert Sonntag, 15. Juli 2018 17:57 von Leander Jedamus
 # modifiziert Dienstag, 05. Juni 2018 01:58 von Leander Jedamus
 # modifiziert Montag, 04. Juni 2018 23:53 von Leander Jedamus
@@ -82,7 +83,7 @@ log.setLevel(logging.INFO)
 scriptpath = os.path.abspath(os.path.dirname(sys.argv[0]))
 try:
   trans = gettext.translation("active-print.py",os.path.join(scriptpath, \
-                                                       "translate"))
+                                                       "locale"))
   trans.install(unicode=True)
 except IOError:
   log.error("Fehler in gettext")
