@@ -1,4 +1,5 @@
 # active-print
+
 Alle ps- und pdf-Dateien, die nach ~/print kopiert werden, werden automatisch
 ausgedruckt.
 Zuerst muß in ~/print für jeden Drucker ein Verzeichnis angelegt werden.
