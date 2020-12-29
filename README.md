@@ -1,7 +1,14 @@
 # active-print
 
-Alle ps- und pdf-Dateien, die nach ~/print/<druckername> kopiert werden,
+All ps- and pdf-files, which are COPIED to ~/print/<printername>, are
+automatically printed.
+Alle ps- und pdf-Dateien, die nach ~/print/<druckername> KOPIERT werden,
 werden automatisch ausgedruckt.
+
+Perhaps you have to do this first:
+```
+sudo apt install notify-osd python-notify python-pyinotify
+```
 
 ## Getting started
 
