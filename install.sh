@@ -1,11 +1,20 @@
 #!/usr/bin/env sh
 
 # erzeugt Montag, 14. Dezember 2020 14:23 (C) 2020 von Leander Jedamus
+# modifiziert Mittwoch, 13. Januar 2021 06:54 von Leander Jedamus
 # modifiziert Dienstag, 15. Dezember 2020 09:05 von Leander Jedamus
 # modifiziert Montag, 14. Dezember 2020 14:23 von Leander Jedamus
 
-# modify this to reflect your printers!
-printers="laserjet duplex"
+usage() {
+  echo "usage: $0 <printer_name1> <printer_name2> ..."
+  exit 1
+};# usage
+
+if [ -z $1 ]; then
+  usage
+fi
+
+printers="$@"
 
 autostart=$HOME/.config/autostart
 my_print=$HOME/print
