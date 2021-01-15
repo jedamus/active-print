@@ -1,6 +1,7 @@
 #!/usr/bin/env sh
 
 # erzeugt Montag, 14. Dezember 2020 14:23 (C) 2020 von Leander Jedamus
+# modifiziert Freitag, 15. Januar 2021 11:20 von Leander Jedamus
 # modifiziert Mittwoch, 13. Januar 2021 06:54 von Leander Jedamus
 # modifiziert Dienstag, 15. Dezember 2020 09:05 von Leander Jedamus
 # modifiziert Montag, 14. Dezember 2020 14:23 von Leander Jedamus
@@ -12,6 +13,8 @@ usage() {
 
 if [ -z $1 ]; then
   usage
+elif [ $1 = "config" ]; then
+  echo "config"
 fi
 
 printers="$@"
