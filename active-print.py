@@ -1,7 +1,8 @@
-#!/usr/bin/env python
+#!/usr/bin/env python2
 # coding=utf8
 
 # erzeugt Donnerstag, 08. Juni 2017 19:05 (C) 2017 von Leander Jedamus
+# modifiziert Samstag, 16. Januar 2021 08:00 von Leander Jedamus
 # modifiziert Donnerstag, 19. November 2020 09:12 von Leander Jedamus
 # modifiziert Sonntag, 15. Juli 2018 17:57 von Leander Jedamus
 # modifiziert Dienstag, 05. Juni 2018 01:58 von Leander Jedamus
@@ -31,30 +32,30 @@ def can_continue(filename):
     filedesc.close()
 
   pid = os.getpid()
-  #print("{pid:d}".format(pid=pid))
-  #print("{filename:s}".format(filename=filename))
+  log.debug("{pid:d}".format(pid=pid))
+  log.debug("{filename:s}".format(filename=filename))
   if os.access(filename, os.F_OK):
-    #print("file existiert.")
+    log.debug("file existiert.")
     filedesc = open(filename,"r")
     # print(filedesc.readline())
     pidstr = filedesc.readline()
     pid = int(pidstr)
-    #print("{pid:d}".format(pid=pid))
+    log.debug("{pid:d}".format(pid=pid))
     filedesc.close()
     befehl = "ps -q " + pidstr + " -o comm= > /dev/null"
-    #print(befehl)
+    log.debug(befehl)
     ret = os.system(befehl)
-    #print("{ret:d}".format(ret=ret))
+    log.debug("{ret:d}".format(ret=ret))
     if (ret == 0):
-      #print("Prozess mit der Nr. {pid:d} läuft noch.".format(pid=pid))
+      log.debug("Prozess mit der Nr. {pid:d} läuft noch.".format(pid=pid))
       return False
     else:
-      #print("Prozess mit der Nr. {pid:d} läuft nicht mehr.".format(pid=pid))
+      log.debug("Prozess mit der Nr. {pid:d} läuft nicht mehr.".format(pid=pid))
       pid = os.getpid()
       write_pid(filename,pid)
       return True
   else:
-    #print("file existiert nicht.")
+    log.debug("file existiert nicht.")
     write_pid(filename,pid)
     return True
 
@@ -79,6 +80,7 @@ log = logging.getLogger()
 log.addHandler(file_handler)
 log.addHandler(stdout_handler)
 log.setLevel(logging.INFO)
+#log.setLevel(logging.DEBUG)
 
 scriptpath = os.path.abspath(os.path.dirname(sys.argv[0]))
 try:
@@ -162,7 +164,7 @@ if can_continue(os.path.join("/tmp",user + "-active-print-" + printer + ".pid"))
   notifier.loop()
 else:
   pass
-  #print("läuft schon.")
+  log.debug("läuft schon.")
 
 # vim:ai sw=2 sts=4 expandtab
 
